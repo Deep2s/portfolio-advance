@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Placeholder — replace with real weather API later
@@ -75,17 +76,12 @@ function IconSpotlight() {
 }
 
 function IconControlCenter() {
-  // macOS Sonoma Control Center — two horizontal toggles
+  // Hamburger menu — 3 horizontal lines
   return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-label="Control Center">
-      {/* Top toggle track */}
-      <rect x="0.5" y="2" width="13" height="3.5" rx="1.75" fill="currentColor" opacity="0.18" />
-      {/* Top toggle knob — right side */}
-      <circle cx="10.25" cy="3.75" r="1.75" fill="currentColor" />
-      {/* Bottom toggle track */}
-      <rect x="0.5" y="8.5" width="13" height="3.5" rx="1.75" fill="currentColor" opacity="0.18" />
-      {/* Bottom toggle knob — left side */}
-      <circle cx="3.75" cy="10.25" r="1.75" fill="currentColor" />
+    <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-label="Menu">
+      <rect x="0" y="0" width="14" height="1.5" rx="0.75" fill="currentColor" />
+      <rect x="0" y="4.25" width="14" height="1.5" rx="0.75" fill="currentColor" />
+      <rect x="0" y="8.5" width="14" height="1.5" rx="0.75" fill="currentColor" />
     </svg>
   );
 }
@@ -117,8 +113,25 @@ function AppleLogo() {
   );
 }
 
+function getWeatherCondition(code: number) {
+  if (code === 0) return "Clear Sky";
+  if (code === 1 || code === 2 || code === 3) return "Partly Cloudy";
+  if (code === 45 || code === 48) return "Fog";
+  if (code >= 51 && code <= 57) return "Drizzle";
+  if (code >= 61 && code <= 67) return "Rain";
+  if (code >= 71 && code <= 77) return "Snow";
+  if (code >= 80 && code <= 82) return "Rain Showers";
+  if (code >= 85 && code <= 86) return "Snow Showers";
+  if (code >= 95 && code <= 99) return "Thunderstorm";
+  return "Clear";
+}
+
+import { usePathname } from "next/navigation";
+
 // ────────────────────────────────────────────────────────
 export default function MacMenuBar() {
+  const pathname = usePathname();
+  
   const [time, setTime] = useState("");
   const [date, setDate] = useState("");
   const [battery, setBattery] = useState<number | null>(null);
@@ -133,8 +146,17 @@ export default function MacMenuBar() {
   const [brightness, setBrightness] = useState(100);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  const [weatherOpen, setWeatherOpen] = useState(false);
+  const [weatherData, setWeatherData] = useState({
+    temp: WEATHER_TEMP,
+    condition: "Clear",
+    location: "Locating..."
+  });
+
   const controlCenterRef = useRef<HTMLDivElement>(null);
   const controlCenterButtonRef = useRef<HTMLButtonElement>(null);
+  const weatherRef = useRef<HTMLDivElement>(null);
+  const weatherButtonRef = useRef<HTMLButtonElement>(null);
 
   // Time & Date effect
   useEffect(() => {
@@ -214,9 +236,50 @@ export default function MacMenuBar() {
       ) {
         setControlCenterOpen(false);
       }
+      if (
+        weatherRef.current &&
+        !weatherRef.current.contains(event.target as Node) &&
+        weatherButtonRef.current &&
+        !weatherButtonRef.current.contains(event.target as Node)
+      ) {
+        setWeatherOpen(false);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Fetch Weather API effect
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            const { latitude, longitude } = position.coords;
+            // Fetch weather
+            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
+            const weatherJson = await weatherRes.json();
+            
+            // Fetch location
+            const locRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
+            const locJson = await locRes.json();
+            
+            setWeatherData({
+              temp: `${Math.round(weatherJson.current_weather.temperature)}°C`,
+              condition: getWeatherCondition(weatherJson.current_weather.weathercode),
+              location: locJson.city || locJson.locality || "Current Location",
+            });
+          } catch (e) {
+            console.error("Failed to fetch weather", e);
+            setWeatherData(prev => ({ ...prev, location: "Unknown Location" }));
+          }
+        },
+        (error) => {
+          console.error("Geolocation error", error);
+          setWeatherData(prev => ({ ...prev, location: "Location Access Denied" }));
+        }
+      );
+    }
   }, []);
 
   const toggleTheme = () => {
@@ -231,6 +294,8 @@ export default function MacMenuBar() {
   };
 
   const batteryLevel = battery ?? 72;
+
+  if (pathname === "/talk") return null;
 
   return (
     <>
@@ -260,44 +325,30 @@ export default function MacMenuBar() {
           <a href="#skills" className="px-3 py-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer">
             Skills
           </a>
-          <a href="#contact" className="px-3 py-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer">
+          <Link href="/talk" className="px-3 py-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer">
             Talk to deepak
-          </a>
+          </Link>
         </div>
 
         {/* ── Right ── */}
         <div className="flex items-center gap-3">
-          {/* Now Playing */}
-          <button
-            className="flex items-center opacity-70 hover:opacity-100 transition-opacity"
-            aria-label="Now Playing"
-            onClick={() => setControlCenterOpen(true)}
-          >
-            <IconNowPlaying />
-          </button>
-
           {/* Weather */}
-          <div className="flex items-center gap-1.5 opacity-90">
+          <button
+            ref={weatherButtonRef}
+            onClick={() => setWeatherOpen(!weatherOpen)}
+            className="flex items-center gap-1.5 opacity-90 hover:opacity-100 transition-opacity"
+            aria-label="Weather"
+          >
             {/* Sun icon */}
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-label="Weather">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
               <circle cx="12" cy="12" r="5" fill="currentColor" stroke="none" />
               <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
             </svg>
-            <span>
-              {WEATHER_TEMP}
-            </span>
-          </div>
+            <span>{weatherData.temp}</span>
+          </button>
 
           {/* Battery */}
           <IconBattery level={batteryLevel} charging={charging} />
-
-          {/* Spotlight */}
-          <button
-            className="flex items-center opacity-65 hover:opacity-100 transition-opacity"
-            aria-label="Spotlight Search"
-          >
-            <IconSpotlight />
-          </button>
 
           {/* Control Center */}
           <button
@@ -318,6 +369,38 @@ export default function MacMenuBar() {
         </div>
       </div>
 
+      {/* ── macOS Weather Dropdown ── */}
+      <AnimatePresence>
+        {weatherOpen && (
+          <motion.div
+            ref={weatherRef}
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed top-8 right-24 w-64 rounded-2xl glass-strong p-4 shadow-2xl z-[70] flex flex-col gap-2 select-none"
+            style={{
+              border: "1px solid var(--menu-bar-border)",
+            }}
+          >
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Weather</span>
+              <span className="text-[11px] text-muted-foreground">{weatherData.location}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-3xl font-light text-foreground">{weatherData.temp}</div>
+                <div className="text-sm font-medium text-foreground">{weatherData.condition}</div>
+              </div>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="text-foreground/80">
+                <circle cx="12" cy="12" r="5" fill="currentColor" stroke="none" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+              </svg>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── macOS Control Center Dropdown ── */}
       <AnimatePresence>
         {controlCenterOpen && (
@@ -327,86 +410,37 @@ export default function MacMenuBar() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed top-8 right-2 w-80 rounded-2xl glass-strong p-4 shadow-2xl z-50 flex flex-col gap-3 select-none"
+            className="fixed top-8 right-2 w-80 rounded-2xl glass-strong p-4 shadow-2xl z-[70] flex flex-col gap-3 select-none"
             style={{
               border: "1px solid var(--menu-bar-border)",
             }}
           >
-            {/* Upper Grid Layout */}
-            <div className="grid grid-cols-2 gap-3">
-              {/* Left Column: Connectivity Card */}
-              <div className="glass rounded-2xl p-3 flex flex-col gap-2.5 shadow-sm">
-                {/* AirDrop Row */}
-
-                {/* AirDrop Row */}
-                <button
-                  className="flex items-center gap-2.5 text-left w-full group cursor-pointer"
-                  onClick={() => setAirDropOn(!airDropOn)}
-                >
-                  <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${
-                      airDropOn
-                        ? "bg-[#0a84ff] text-white"
-                        : "bg-black/10 dark:bg-white/10 text-foreground/50"
-                    }`}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                      <path d="M12 15a2 2 0 100-4 2 2 0 000 4z" />
-                      <path d="M8 10a6 6 0 018 0" />
-                      <path d="M4 6a12 12 0 0116 0" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-bold leading-tight text-foreground">AirDrop</p>
-                    <p className="text-[9px] text-muted-foreground leading-none">
-                      {airDropOn ? "Everyone" : "Off"}
-                    </p>
-                  </div>
-                </button>
+            {/* Theme Toggle Card */}
+            <button
+              onClick={toggleTheme}
+              className="glass rounded-2xl p-3 flex items-center gap-3 text-left cursor-pointer transition-all duration-300 hover:glow-purple group shadow-sm w-full"
+            >
+              <div
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  theme === "dark" ? "bg-purple-600/20 text-purple-400" : "bg-yellow-500/20 text-yellow-600"
+                }`}
+              >
+                {theme === "dark" ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <circle cx="12" cy="12" r="4.5" fill="currentColor" stroke="none" />
+                    <path d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M3 12h2M19 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                  </svg>
+                )}
               </div>
-
-              {/* Right Column: Mini Widgets (Theme Toggle & Keyboard Brightness) */}
-              <div className="flex flex-col gap-3">
-                {/* Theme Toggle Card */}
-                <button
-                  onClick={toggleTheme}
-                  className="glass rounded-2xl p-3 flex flex-col justify-between items-start h-20 text-left cursor-pointer transition-all duration-300 hover:glow-purple group shadow-sm w-full"
-                >
-                  <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 ${
-                      theme === "dark" ? "bg-purple-600/20 text-purple-400" : "bg-yellow-500/20 text-yellow-600"
-                    }`}
-                  >
-                    {theme === "dark" ? (
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                      </svg>
-                    ) : (
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                        <circle cx="12" cy="12" r="4.5" fill="currentColor" stroke="none" />
-                        <path d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M3 12h2M19 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-                      </svg>
-                    )}
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-bold leading-tight text-foreground">Dark Mode</p>
-                    <p className="text-[9px] text-muted-foreground leading-none">{theme === "dark" ? "On" : "Off"}</p>
-                  </div>
-                </button>
-
-                {/* Keyboard Brightness Card */}
-                <div className="glass rounded-2xl p-2.5 flex items-center justify-between shadow-sm flex-1">
-                  <div className="flex items-center gap-2">
-                    <svg width="16" height="12" viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-foreground/75">
-                      <rect x="2" y="2" width="20" height="12" rx="2" />
-                      <path d="M6 6h.01M10 6h.01M14 6h.01M18 6h.01M6 10h12" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                    <span className="text-[10px] font-semibold text-foreground/80">Keyboard</span>
-                  </div>
-                  <span className="text-[9px] font-bold text-muted-foreground bg-black/5 dark:bg-white/5 px-1.5 py-0.5 rounded">Auto</span>
-                </div>
+              <div>
+                <p className="text-[12px] font-bold leading-tight text-foreground">Dark Mode</p>
+                <p className="text-[10px] text-muted-foreground leading-none mt-0.5">{theme === "dark" ? "On" : "Off"}</p>
               </div>
-            </div>
+            </button>
 
             {/* Slider Module: Display Brightness */}
             <div className="glass rounded-2xl p-3 flex flex-col gap-1.5 shadow-sm">

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import MacMenuBar from "@/components/layout/MacMenuBar";
 import Sidebar from "@/components/layout/Sidebar";
 
 const poppins = Poppins({
@@ -39,9 +38,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark ${poppins.variable} antialiased`}>
       <body
-        className={`${poppins.className} h-screen bg-background text-foreground pt-11 overflow-hidden`}
+        className={`${poppins.className} h-screen bg-background text-foreground overflow-hidden`}
       >
-        <MacMenuBar />
         <Sidebar />
         {children}
       </body>

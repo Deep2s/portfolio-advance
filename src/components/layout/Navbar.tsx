@@ -4,6 +4,7 @@ import { useScrollProgress } from "@/hooks/useScrollProgress";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import Link from "next/link";
 
 const navLinks = [
   { href: "#experience", label: "Experience" },
@@ -57,12 +58,12 @@ export default function Navbar() {
                 <span className="absolute inset-0 rounded-lg bg-black/4 dark:bg-white/5 scale-0 group-hover:scale-100 transition-transform duration-200 origin-center" />
               </a>
             ))}
-            <a
-              href="#contact"
+            <Link
+              href="/talk"
               className="ml-4 px-5 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-[oklch(0.65_0.22_290)] to-[oklch(0.75_0.15_200)] text-white hover:opacity-90 hover:scale-105 transition-all duration-200 shadow-md"
             >
               Talk to deepak
-            </a>
+            </Link>
           </nav>
 
           {/* Mobile hamburger */}
@@ -128,13 +129,13 @@ export default function Navbar() {
                   {link.label}
                 </motion.a>
               ))}
-              <a
-                href="#contact"
+              <Link
+                href="/talk"
                 className="mt-2 px-4 py-3 rounded-xl text-sm font-semibold text-center bg-gradient-to-r from-[oklch(0.65_0.22_290)] to-[oklch(0.75_0.15_200)] text-white"
                 onClick={() => setMenuOpen(false)}
               >
                 Talk to deepak
-              </a>
+              </Link>
             </nav>
           </motion.div>
         )}
