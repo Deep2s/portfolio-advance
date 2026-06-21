@@ -241,15 +241,12 @@ export default function ExperiencePage() {
 
         {/* ── Dark gradient wash for readability ── */}
         <div
-          className="absolute inset-0 z-[1] pointer-events-none"
-          style={{
-            background: "radial-gradient(circle at 10% 30%, rgba(11, 10, 15, 0.94) 0%, rgba(11, 10, 15, 0.8) 60%, rgba(11, 10, 15, 0.3) 100%)"
-          }}
+          className="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-[#0b0a0f]/98 via-[#0b0a0f]/92 to-[#0b0a0f]/85 md:bg-[radial-gradient(circle_at_10%_30%,rgba(11,10,15,0.94)_0%,rgba(11,10,15,0.8)_60%,rgba(11,10,15,0.3)_100%)]"
         />
 
         {/* ── Scrollable Content Layer ── */}
         <div className="absolute inset-0 z-10 w-full h-full overflow-y-auto overflow-x-hidden pt-24 pb-32 px-6 sm:px-12 md:px-24 scroll-smooth" style={{ pointerEvents: "none" }}>
-          <div className="max-w-5xl mx-auto pl-0 sm:pl-16" style={{ pointerEvents: "auto" }}>
+          <div className="max-w-5xl mx-auto pl-0 md:pl-16" style={{ pointerEvents: "auto" }}>
             
             <header className="mb-20 text-center flex flex-col items-center select-none">
               <TypewriterHeader />

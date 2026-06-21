@@ -27,15 +27,12 @@ export default function HirePage() {
 
         {/* ── Subtle gradient wash for text contrast on the left ── */}
         <div
-          className="absolute inset-0 z-[1] pointer-events-none"
-          style={{
-            background: "linear-gradient(to right, rgba(11, 10, 15, 0.75) 0%, rgba(11, 10, 15, 0.25) 45%, rgba(11, 10, 15, 0) 100%)"
-          }}
+          className="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-[#0b0a0f]/95 to-[#0b0a0f]/90 md:bg-[linear-gradient(to_right,rgba(11,10,15,0.75)_0%,rgba(11,10,15,0.25)_45%,rgba(11,10,15,0)_100%)]"
         />
 
         {/* ── Scrollable Content Layer ── */}
         <div className="absolute inset-0 z-10 w-full h-full overflow-y-auto overflow-x-hidden pt-24 pb-32 px-6 sm:px-12 md:px-20 scroll-smooth" style={{ pointerEvents: "none" }}>
-          <div className="max-w-5xl mx-auto pl-0 sm:pl-12 text-left" style={{ pointerEvents: "auto" }}>
+          <div className="max-w-5xl mx-auto pl-0 md:pl-12 text-left" style={{ pointerEvents: "auto" }}>
             
             {/* Header */}
             <header className="mb-10">

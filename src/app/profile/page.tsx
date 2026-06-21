@@ -115,16 +115,12 @@ export default function ProfilePage() {
 
         {/* ── Subtle light overlay on left side for text readability ── */}
         <div
-          className="absolute inset-0 z-[1] pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(to right, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.4) 25%, rgba(255,255,255,0) 45%)",
-          }}
+          className="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-white/95 to-white/90 md:bg-[linear-gradient(to_right,rgba(255,255,255,0.85)_0%,rgba(255,255,255,0.4)_25%,rgba(255,255,255,0)_45%)]"
         />
 
         {/* ── Scrollable content layer ── */}
         <div className="absolute inset-0 z-10 w-full h-full overflow-y-auto overflow-x-hidden pt-24 pb-32 px-6 sm:px-12 md:px-20 scroll-smooth" style={{ pointerEvents: "none" }}>
-          <div className="max-w-3xl pl-0 sm:pl-12" style={{ pointerEvents: "auto" }}>
+          <div className="max-w-3xl pl-0 md:pl-12" style={{ pointerEvents: "auto" }}>
 
             {/* Header */}
             <header className="mb-16">

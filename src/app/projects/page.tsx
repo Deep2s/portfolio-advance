@@ -44,12 +44,20 @@ const OWN_PROJECTS: ProjectType[] = [
       mobile: "9876543211",
       password: "password123"
     }
+  },
+  {
+    id: "04",
+    title: "Kanah Cosmetics",
+    subtitle: "Cosmetics E-Commerce Brand",
+    description: "An elegant e-commerce platform and digital brand identity for cosmetics and skin care products. Self-developed and owned brand.",
+    tags: ["Next.js", "TypeScript", "TailwindCSS", "E-Commerce", "Brand Development"],
+    link: "https://kanah.in"
   }
 ];
 
 const PROFESSIONAL_PROJECTS: ProjectType[] = [
   {
-    id: "04",
+    id: "05",
     title: "Restaurant Food Ordering App",
     subtitle: "Client Mobile Application",
     description: "Engineered a mobile-first food delivery system with Android and iOS apps supporting cart, checkout, and secure payments.",
@@ -57,7 +65,7 @@ const PROFESSIONAL_PROJECTS: ProjectType[] = [
     link: "https://play.google.com/store/apps/details?id=com.thedeepg.ashirwad"
   },
   {
-    id: "05",
+    id: "06",
     title: "Prism LMS",
     subtitle: "Corporate Learning Management",
     description: "A comprehensive corporate Learning Management System (LMS) designed for tracking, documenting, and delivering educational courses.",
@@ -65,21 +73,21 @@ const PROFESSIONAL_PROJECTS: ProjectType[] = [
     link: "https://prismlms.com"
   },
   {
-    id: "06",
+    id: "07",
     title: "GIS Research & Survey App",
     subtitle: "Geospatial Visualization & Analysis",
     description: "A GIS research tool with map-driven workflows, supporting geospatial visualization, analytics, and real-time location-based insights.",
     tags: ["React.js", "Google Maps API", "PostgreSQL", "AWS", "GeoJSON"]
   },
   {
-    id: "07",
+    id: "08",
     title: "Learning Management System",
     subtitle: "Corporate Training & Delivery",
     description: "Designed and built high-performance enterprise-grade learning management platform with course delivery workflows.",
     tags: ["React", "TypeScript", "NestJS", "PostgreSQL", "AWS"]
   },
   {
-    id: "08",
+    id: "09",
     title: "Admin Panels & Dashboards",
     subtitle: "Enterprise Management Systems",
     description: "Developed complex administrative dashboards and panels with dynamic tables, interactive charts, and role-based workflows.",
@@ -171,7 +179,7 @@ export default function ProjectsPage() {
       {/* Scrollable Content Overlay */}
       <div className="absolute inset-0 z-10 w-full h-full overflow-y-auto overflow-x-hidden pt-24 pb-32 px-6 sm:px-12 md:px-24 scroll-smooth">
         
-        <div className="max-w-5xl mx-auto pl-0 sm:pl-16">
+        <div className="max-w-5xl mx-auto pl-0 md:pl-16">
           <header className="mb-20">
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-[200] tracking-tight mb-4 drop-shadow-md">
               Selected <span className="font-[600]">Works</span>

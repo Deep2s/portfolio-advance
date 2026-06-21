@@ -271,12 +271,12 @@ export default function MusicPage() {
       )}
 
       {/* Top Button */}
-      <div className="absolute top-8 right-8 z-30">
+      <div className="absolute top-6 right-6 z-30">
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="px-5 py-2.5 rounded-full glass-strong text-white font-semibold flex items-center gap-2 hover:bg-white/10 hover:scale-105 transition-all shadow-lg"
+          className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-full glass-strong text-white text-sm font-semibold flex items-center gap-2 hover:bg-white/10 hover:scale-105 transition-all shadow-lg"
         >
-          <List size={20} />
+          <List size={18} />
           Playlist
         </button>
       </div>
@@ -347,10 +347,10 @@ export default function MusicPage() {
       </div>
 
       {/* Bottom Audio Player UI */}
-      <div className="absolute bottom-0 left-0 w-full glass-strong border-t border-white/10 p-4 px-8 z-20 flex flex-col md:flex-row items-center justify-between gap-4 backdrop-blur-2xl bg-black/40">
+      <div className="absolute bottom-0 left-0 w-full glass-strong border-t border-white/10 p-3 px-4 sm:px-8 z-20 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4 backdrop-blur-2xl bg-black/40">
         
         {/* Track Info */}
-        <div className="flex items-center gap-4 w-full md:w-1/3">
+        <div className="flex items-center gap-3 sm:gap-4 w-full md:w-1/3">
           {currentTrack?.artwork ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={currentTrack.artwork} alt={currentTrack.title} className="w-14 h-14 rounded-md object-cover shadow-lg" />
@@ -380,7 +380,7 @@ export default function MusicPage() {
 
           {/* Player Controls */}
           <div className="flex flex-col items-center w-full md:w-1/3">
-            <div className="flex items-center gap-6 mb-2">
+            <div className="flex items-center gap-4 sm:gap-6 mb-1.5">
               <button onClick={playPrev} disabled={!currentTrack} className="text-white/70 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 <SkipBack size={24} fill="currentColor" />
               </button>

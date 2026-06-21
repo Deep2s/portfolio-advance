@@ -16,7 +16,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
         <ProjectsBackground themeColor={themeColor} />
       
       {/* Scrollable Content Overlay */}
-      <div className="absolute inset-0 z-10 w-full h-full overflow-y-auto overflow-x-hidden pt-20 pb-32 pr-8 pl-20 sm:pr-16 sm:pl-28 md:px-32 scroll-smooth">
+      <div className="absolute inset-0 z-10 w-full h-full overflow-y-auto overflow-x-hidden pt-20 pb-32 px-6 md:pl-28 md:pr-16 lg:px-32 scroll-smooth">
         
         <div className="max-w-7xl mx-auto">
           <Link 
