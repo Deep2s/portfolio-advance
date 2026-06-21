@@ -55,9 +55,9 @@ export default function WebGPULightsCustom({ className }: WebGPULightsCustomProp
       return light;
     };
 
-    light1 = addLight(0xffaa00);
-    light2 = addLight(0x0040ff);
-    light3 = addLight(0x80ff80);
+    light1 = addLight(0xffd700); // Golden
+    light2 = addLight(0x00bfff); // Sky Blue
+    light3 = addLight(0xffffff); // White
 
     const allLightsNode = lights([light1, light2, light3]);
 
@@ -68,7 +68,10 @@ export default function WebGPULightsCustom({ className }: WebGPULightsCustomProp
     }
 
     const geometryPoints = new THREE.BufferGeometry().setFromPoints(points);
-    const materialPoints = new THREE.PointsNodeMaterial();
+    const materialPoints = new THREE.PointsNodeMaterial({
+      size: 2.0,
+      sizeAttenuation: false
+    });
 
     const lightingModel = new CustomLightingModel();
     // @ts-ignore - 'context' is available at runtime but may be missing in @types/three

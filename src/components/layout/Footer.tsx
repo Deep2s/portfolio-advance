@@ -3,10 +3,10 @@
 import { motion } from "framer-motion";
 
 const socialLinks = [
-  { label: "GitHub", href: "https://github.com", icon: "GH" },
-  { label: "LinkedIn", href: "https://linkedin.com", icon: "LI" },
-  { label: "Twitter", href: "https://twitter.com", icon: "TW" },
-  { label: "Email", href: "mailto:hello@example.com", icon: "@" },
+  { label: "GitHub", href: "https://github.com/Deep2s", icon: "GH" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/thedeepg", icon: "LI" },
+  { label: "Portfolio", href: "https://aiwithdeepak-portfolio.netlify.app", icon: "PF" },
+  { label: "Email", href: "mailto:deepakmittald129@gmail.com", icon: "@" },
 ];
 
 export default function Footer() {

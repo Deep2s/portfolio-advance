@@ -30,6 +30,7 @@ export default function MusicPage() {
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
 
   const hasInitialized = useRef(false);
+  const consecutiveErrorsRef = useRef(0);
 
   useEffect(() => {
     setHasMore(true);
@@ -122,7 +123,7 @@ export default function MusicPage() {
     }
   };
 
-  const playTrack = async (track: AudiusTrack) => {
+  const playTrack = async (track: AudiusTrack, skipErrorClear = false) => {
     if (track.id === currentTrack?.id) {
       togglePlay();
       return;
@@ -130,7 +131,9 @@ export default function MusicPage() {
     
     setCurrentTrack(track);
     setIsPlaying(true);
-    setPlaybackError(null);
+    if (!skipErrorClear) {
+      setPlaybackError(null);
+    }
     setIsBuffering(true);
   };
 
@@ -170,6 +173,31 @@ export default function MusicPage() {
     const currentIndex = tracks.findIndex(t => t.id === currentTrack?.id);
     const prevIndex = currentIndex >= 0 ? (currentIndex - 1 + tracks.length) % tracks.length : 0;
     playTrack(tracks[prevIndex]);
+  };
+
+  const handleAudioError = () => {
+    setIsBuffering(false);
+    
+    const msg = "This music has been removed, playing another";
+    setPlaybackError(msg);
+    
+    setTimeout(() => {
+      setPlaybackError(prev => prev === msg ? null : prev);
+    }, 4500);
+
+    if (consecutiveErrorsRef.current < 5) {
+      consecutiveErrorsRef.current += 1;
+      
+      if (tracks.length > 0) {
+        const currentIndex = tracks.findIndex(t => t.id === currentTrack?.id);
+        const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % tracks.length : 0;
+        playTrack(tracks[nextIndex], true);
+      }
+    } else {
+      setIsPlaying(false);
+      setPlaybackError("Multiple tracks failed to load. Please try another category.");
+      consecutiveErrorsRef.current = 0;
+    }
   };
 
   const handleTimeUpdate = () => {
@@ -222,14 +250,14 @@ export default function MusicPage() {
         onTimeUpdate={handleTimeUpdate}
         onEnded={playNext}
         onWaiting={() => setIsBuffering(true)}
-        onPlaying={() => { setIsBuffering(false); setPlaybackError(null); }}
+        onPlaying={() => {
+          setIsBuffering(false);
+          setPlaybackError(null);
+          consecutiveErrorsRef.current = 0;
+        }}
         onCanPlay={() => setIsBuffering(false)}
         onLoadStart={() => setIsBuffering(true)}
-        onError={() => {
-          setIsBuffering(false);
-          setIsPlaying(false);
-          setPlaybackError("Failed to load the audio stream.");
-        }}
+        onError={handleAudioError}
       />
 
       {/* Hidden Audio Element for Preloading Next Track */}

@@ -251,34 +251,49 @@ export default function MacMenuBar() {
 
   // Fetch Weather API effect
   useEffect(() => {
+    const fetchWeather = async (lat: number, lon: number, cityName: string) => {
+      try {
+        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+        const weatherJson = await weatherRes.json();
+        
+        setWeatherData({
+          temp: `${Math.round(weatherJson.current_weather.temperature)}°C`,
+          condition: getWeatherCondition(weatherJson.current_weather.weathercode),
+          location: cityName,
+        });
+      } catch (e) {
+        console.error("Failed to fetch weather", e);
+        setWeatherData(prev => ({ ...prev, location: "Unknown Location" }));
+      }
+    };
+
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          try {
-            const { latitude, longitude } = position.coords;
-            // Fetch weather
-            const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
-            const weatherJson = await weatherRes.json();
-            
-            // Fetch location
-            const locRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
-            const locJson = await locRes.json();
-            
-            setWeatherData({
-              temp: `${Math.round(weatherJson.current_weather.temperature)}°C`,
-              condition: getWeatherCondition(weatherJson.current_weather.weathercode),
-              location: locJson.city || locJson.locality || "Current Location",
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`)
+            .then(res => res.json())
+            .then(locJson => {
+              fetchWeather(latitude, longitude, locJson.city || locJson.locality || "Current Location");
+            })
+            .catch(() => {
+              fetchWeather(latitude, longitude, "Current Location");
             });
-          } catch (e) {
-            console.error("Failed to fetch weather", e);
-            setWeatherData(prev => ({ ...prev, location: "Unknown Location" }));
-          }
         },
         (error) => {
           console.error("Geolocation error", error);
-          setWeatherData(prev => ({ ...prev, location: "Location Access Denied" }));
+          // Fallback to London, UK
+          fetchWeather(51.5085, -0.1257, "London (Default)");
+        },
+        {
+          enableHighAccuracy: false,
+          timeout: 5000, // 5s timeout
+          maximumAge: 1000 * 60 * 60, // 1h cache
         }
       );
+    } else {
+      // Geolocation not supported, fallback to London
+      fetchWeather(51.5085, -0.1257, "London (Default)");
     }
   }, []);
 
@@ -295,7 +310,7 @@ export default function MacMenuBar() {
 
   const batteryLevel = battery ?? 72;
 
-  if (pathname === "/talk") return null;
+
 
   return (
     <>
@@ -316,17 +331,17 @@ export default function MacMenuBar() {
       >
         {/* ── Left ── */}
         <div className="flex items-center gap-1 -ml-2">
-          <a href="#experience" className="px-3 py-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer">
+          <Link href="/experience" className="px-3 py-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer">
             Experience
-          </a>
-          <a href="#projects" className="px-3 py-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer">
+          </Link>
+          <Link href="/projects" className="px-3 py-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer">
             Projects
-          </a>
-          <a href="#skills" className="px-3 py-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer">
+          </Link>
+          <Link href="/#skills" className="px-3 py-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer">
             Skills
-          </a>
-          <Link href="/talk" className="px-3 py-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer">
-            Talk to deepak
+          </Link>
+          <Link href="/hire" className="px-3 py-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer">
+            Hire Deepak
           </Link>
         </div>
 

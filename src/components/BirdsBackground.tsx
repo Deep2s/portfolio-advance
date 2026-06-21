@@ -96,27 +96,14 @@ export default function BirdsBackground() {
     pointer = new THREE.Vector2(10, 10);
     raycaster = new THREE.Raycaster();
 
-    // Sky
-    const geometry = new THREE.IcosahedronGeometry(1, 6);
-    const material = new THREE.MeshBasicNodeMaterial({
-      // Use vertex positions to create atmosphere colors
-      colorNode: varying(
-        vec4(sub(0.25, positionLocal.y), sub(-0.25, positionLocal.y), add(1.5, positionLocal.y), 1.0)
-      ),
-      side: THREE.BackSide,
-    });
-
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.rotation.z = 0.75;
-    mesh.scale.setScalar(1200);
-    scene.add(mesh);
-
     // Renderer
     renderer = new THREE.WebGPURenderer({
       antialias: true,
       forceWebGL: false,
+      alpha: true,
       requiredLimits: { maxStorageBuffersInVertexStage: 3 },
     });
+    renderer.setClearColor(0x000000, 0);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.toneMapping = THREE.NeutralToneMapping;

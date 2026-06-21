@@ -7,9 +7,9 @@ import { useState } from "react";
 import Link from "next/link";
 
 const navLinks = [
-  { href: "#experience", label: "Experience" },
-  { href: "#projects", label: "Projects" },
-  { href: "#skills", label: "Skills" },
+  { href: "/experience", label: "Experience" },
+  { href: "/projects", label: "Projects" },
+  { href: "/#skills", label: "Skills" },
 ];
 
 export default function Navbar() {
@@ -49,20 +49,20 @@ export default function Navbar() {
             aria-label="Main navigation"
           >
             {navLinks.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
                 className="relative px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors duration-200 group"
               >
                 <span className="relative z-10">{link.label}</span>
                 <span className="absolute inset-0 rounded-lg bg-black/4 dark:bg-white/5 scale-0 group-hover:scale-100 transition-transform duration-200 origin-center" />
-              </a>
+              </Link>
             ))}
             <Link
-              href="/talk"
-              className="ml-4 px-5 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-[oklch(0.65_0.22_290)] to-[oklch(0.75_0.15_200)] text-white hover:opacity-90 hover:scale-105 transition-all duration-200 shadow-md"
+              href="/hire"
+              className="ml-4 px-5 py-2 rounded-full text-sm font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:opacity-90 hover:scale-105 transition-all duration-200 shadow-md cursor-pointer"
             >
-              Talk to deepak
+              Hire Deepak
             </Link>
           </nav>
 
@@ -117,24 +117,28 @@ export default function Navbar() {
           >
             <nav className="flex flex-col gap-1">
               {navLinks.map((link, i) => (
-                <motion.a
+                <motion.div
                   key={link.href}
-                  href={link.href}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.06 }}
-                  className="px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200"
-                  onClick={() => setMenuOpen(false)}
+                  className="w-full"
                 >
-                  {link.label}
-                </motion.a>
+                  <Link
+                    href={link.href}
+                    className="px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-all duration-200 block"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
               ))}
               <Link
-                href="/talk"
-                className="mt-2 px-4 py-3 rounded-xl text-sm font-semibold text-center bg-gradient-to-r from-[oklch(0.65_0.22_290)] to-[oklch(0.75_0.15_200)] text-white"
+                href="/hire"
+                className="mt-2 px-4 py-3 rounded-xl text-sm font-semibold text-center bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md cursor-pointer"
                 onClick={() => setMenuOpen(false)}
               >
-                Talk to deepak
+                Hire Deepak
               </Link>
             </nav>
           </motion.div>

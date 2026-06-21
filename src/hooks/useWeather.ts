@@ -42,12 +42,17 @@ export function useWeather() {
       },
       (err) => {
         console.error("Geolocation error:", err);
-        setLocationError("Location permission denied. Showing default location (London).");
+        setLocationError("Location permission denied or timed out. Showing default location (London).");
         // Fallback to London
         setCoords({
           latitude: 51.5085,
           longitude: -0.1257,
         });
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 5000, // 5 seconds timeout to prevent infinite loading state
+        maximumAge: 1000 * 60 * 60, // Cache location for 1 hour
       }
     );
   }, []);

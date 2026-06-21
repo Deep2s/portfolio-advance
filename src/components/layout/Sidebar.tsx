@@ -27,6 +27,7 @@ export default function Sidebar() {
     },
     {
       name: "Profile",
+      href: "/profile",
       svg: <User size={18} strokeWidth={2} />
     },
     {
@@ -36,12 +37,8 @@ export default function Sidebar() {
     },
     {
       name: "Experience",
+      href: "/experience",
       svg: <Briefcase size={18} strokeWidth={2} />
-    },
-    {
-      name: "Meet Deepak",
-      href: "/talk",
-      svg: <MessageSquare size={18} strokeWidth={2} />
     },
     {
       name: "Music",
@@ -54,16 +51,11 @@ export default function Sidebar() {
       svg: <CloudSun size={18} strokeWidth={2} />
     },
     {
-      name: "Problem Solving",
-      svg: <Lightbulb size={18} strokeWidth={2} />
-    },
-    {
       name: "Hire Deepak",
+      href: "/hire",
       svg: <HeartHandshake size={18} strokeWidth={2} />
     }
   ];
-
-  if (pathname === "/talk") return null;
 
   return (
     <motion.div
